@@ -2,16 +2,17 @@ import axios from 'axios';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 const baseURL = isDevelopment 
-  ? 'http://localhost:8080/api'
-  : 'https://44.203.171.26:8080/api';  // Utilisation du port HTTPS
+  ? 'http://44.203.171.26:8080/api'
+  : 'http://44.203.171.26:8080/api';
 
 // Create an axios instance with the base URL for our API
 const api = axios.create({
   baseURL,
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json'
   },
-  withCredentials: true // Ajout pour supporter les cookies et l'authentification
+  withCredentials: false // Désactivé pour éviter les problèmes CORS
 });
 
 // Add a request interceptor to add the token to the headers
