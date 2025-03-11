@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/Button';
+import Alert from '@/components/ui/Alert';
 import { useAuth } from '@/lib/context/AuthContext';
 import { FiUser, FiLock, FiLogIn, FiArrowRight } from 'react-icons/fi';
 import { motion } from 'framer-motion';
@@ -46,18 +47,14 @@ export default function LoginPage() {
   });
   
   const onSubmit = async (data: LoginFormValues) => {
-    setIsLoading(true);
-    setError('');
-    
     try {
+      setError('');
+      setIsLoading(true);
       await login(data.username, data.password);
-      // Let the useEffect handle the redirect
+      router.push('/');
     } catch (err: any) {
       console.error('Login error:', err);
-      setError(
-        err.response?.data?.message || 
-        'Échec de la connexion. Veuillez vérifier vos identifiants et réessayer.'
-      );
+      setError(err.message || 'Une erreur est survenue lors de la connexion');
     } finally {
       setIsLoading(false);
     }
@@ -84,9 +81,11 @@ export default function LoginPage() {
       </div>
       
       {error && (
-        <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-md text-sm">
-          {error}
-        </div>
+        <Alert
+          type="error"
+          message={error}
+          className="mb-6"
+        />
       )}
       
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

@@ -1,8 +1,13 @@
 import axios from 'axios';
 
+const isDevelopment = process.env.NODE_ENV === 'development';
+const baseURL = isDevelopment 
+  ? 'http://localhost:8080/api'
+  : 'http://44.203.171.26:8080/api';
+
 // Create an axios instance with the base URL for our API
 const api = axios.create({
-  baseURL: 'http://44.203.171.26:8080/api',
+  baseURL,
   headers: {
     'Content-Type': 'application/json',
   },

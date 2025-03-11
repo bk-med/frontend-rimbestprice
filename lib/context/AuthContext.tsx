@@ -73,35 +73,36 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const login = async (username: string, password: string) => {
-    setLoading(true);
-    
+  const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      const response = await apiLogin({ username, password });
+      setLoading(true);
+      const response = await apiLogin({ email, password });
+      const { token, user } = response;
       
-      // Store token and user data
-      localStorage.setItem('token', response.token);
-      const userData: UserData = {
-        id: response.id,
-        username: response.username,
-        email: response.email,
-        role: response.role
-      };
-      localStorage.setItem('user', JSON.stringify(userData));
-      
-      setToken(response.token);
-      setUser(userData);
-      // Reset the redirect counter on successful login
-      setLoginRedirectCount(0);
-      return true; // Indicate success
-    } catch (error) {
+      localStorage.setItem('token', token);
+      setUser(user);
+      setIsAuthenticated(true);
+      return true;
+    } catch (error: any) {
       console.error('Login error', error);
-      // Clear any existing token to be safe
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      setToken(null);
-      setUser(null);
-      throw error;
+      let errorMessage = 'Une erreur est survenue lors de la connexion';
+      
+      if (error.code === 'ERR_NETWORK' || error.code === 'ERR_CONNECTION_REFUSED') {
+        errorMessage = 'Impossible de se connecter au serveur. Veuillez vérifier que le serveur est accessible.';
+      } else if (error.response) {
+        switch (error.response.status) {
+          case 401:
+            errorMessage = 'Email ou mot de passe incorrect';
+            break;
+          case 403:
+            errorMessage = 'Accès refusé';
+            break;
+          default:
+            errorMessage = error.response.data?.message || errorMessage;
+        }
+      }
+      
+      throw new Error(errorMessage);
     } finally {
       setLoading(false);
     }

@@ -11,6 +11,7 @@ import { FiArrowLeft, FiList, FiFilter, FiRefreshCw, FiSliders } from 'react-ico
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import React from 'react';
+import { formatDate, formatTime, formatPrice, formatNumber } from '@/lib/utils/formatters';
 
 export default function FlightsPage() {
   return (
@@ -62,7 +63,9 @@ function FlightsContent() {
       setAllFlights(flightsData);
     } catch (err: any) {
       console.error('Erreur lors de la récupération des vols:', err);
-      if (err.response && err.response.status === 401) {
+      if (err.code === 'ERR_CONNECTION_REFUSED') {
+        setError('Impossible de se connecter au serveur. Veuillez vérifier que le serveur est en cours d\'exécution et réessayer.');
+      } else if (err.response && err.response.status === 401) {
         setError('Accès non autorisé. Certains endpoints nécessitent peut-être une authentification.');
       } else {
         setError('Impossible de récupérer les vols. Veuillez réessayer ou contacter l\'administrateur.');
@@ -245,9 +248,9 @@ function FlightsContent() {
                     />
                   </div>
                   <div className="flex justify-between text-sm bg-gray-100 p-2 rounded-md">
-                    <span className="font-medium">{priceRange[0].toLocaleString()} MRU</span>
+                    <span className="font-medium">{formatNumber(priceRange[0])} MRU</span>
                     <span>-</span>
-                    <span className="font-medium">{priceRange[1].toLocaleString()} MRU</span>
+                    <span className="font-medium">{formatNumber(priceRange[1])} MRU</span>
                   </div>
                 </div>
               </div>
