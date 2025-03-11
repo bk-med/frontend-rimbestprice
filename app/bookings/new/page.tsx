@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -70,6 +70,14 @@ type PassengerFormValues = z.infer<typeof passengerSchema>;
 type PaymentFormValues = z.infer<typeof paymentSchema>;
 
 export default function NewBookingPage() {
+  return (
+    <Suspense fallback={<div>Chargement...</div>}>
+      <BookingContent />
+    </Suspense>
+  );
+}
+
+function BookingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isAuthenticated, user, loading: authLoading } = useAuth();

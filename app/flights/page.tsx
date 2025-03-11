@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Layout } from '@/components/layout/Layout';
 import { FlightSearchForm } from '@/components/flights/FlightSearchForm';
@@ -13,6 +13,14 @@ import { motion } from 'framer-motion';
 import React from 'react';
 
 export default function FlightsPage() {
+  return (
+    <Suspense fallback={<div>Chargement...</div>}>
+      <FlightsContent />
+    </Suspense>
+  );
+}
+
+function FlightsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [allFlights, setAllFlights] = useState<Flight[]>([]);
